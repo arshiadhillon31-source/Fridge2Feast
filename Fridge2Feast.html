@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fridge2Feast — Kitchen Adventure</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--pink:#efa9c3;--pink2:#f8dbe6;--lav:#c7bce9;--blue:#add3ee;--mint:#b8e1d7;--cream:#fff8f1;--text:#6e6077;--white:rgba(255,255,255,.76)}
+body{min-height:100vh;font-family:Arial,sans-serif;color:var(--text);background:radial-gradient(circle at 10% 10%,#ffdce9,transparent 28%),radial-gradient(circle at 90% 10%,#ded6fb,transparent 30%),radial-gradient(circle at 50% 100%,#d8f2f0,transparent 35%),linear-gradient(135deg,#f6e3eb,#e1e8fa);padding-bottom:90px}
+button,input{font:inherit}button{cursor:pointer}
+.app{width:min(100%,440px);margin:auto}
+.top{height:62px;padding:0 15px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.62);backdrop-filter:blur(16px);border-bottom:1px solid #fff;position:sticky;top:0;z-index:20}
+.logo{font-size:20px;font-weight:800}.logo b{color:#dd89a8}
+.os{font-size:8px;font-weight:800;background:#fff8;padding:7px 9px;border-radius:10px}
+.dot{display:inline-block;width:6px;height:6px;background:#79c99a;border-radius:50%;margin-right:4px}
+.player,.window,.widget,.panel,.adventure,.recipe-area{margin:12px 13px}
+.player{display:flex;align-items:center;gap:9px;padding:9px;background:var(--white);border:1px solid white;border-radius:15px;box-shadow:0 8px 20px #806b8a18}
+.avatar{width:37px;height:37px;display:grid;place-items:center;border-radius:11px;background:linear-gradient(135deg,#facbdc,#c9c0ed);font-size:21px}
+.info{flex:1}.name{font-size:9px;font-weight:800}.level{font-size:7px;color:#9b899f;margin-top:2px}.xp{width:100px;font-size:7px;font-weight:800}.xptext{display:flex;justify-content:space-between;margin-bottom:4px}.bar{height:6px;background:#ded6e3;border-radius:9px;overflow:hidden}.fill{height:100%;width:48%;background:linear-gradient(90deg,#efa4c1,#b9abe7);transition:.35s}
+.window,.panel{overflow:hidden;border-radius:20px;background:var(--white);backdrop-filter:blur(14px);border:1px solid white;box-shadow:0 13px 32px #806b8a1c}
+.head{height:37px;padding:0 12px;display:flex;align-items:center;justify-content:space-between;background:#eee5f8aa;border-bottom:1px solid white;font-size:8px;font-weight:900}
+.controls{display:flex;gap:4px}.controls i{width:9px;height:9px;border-radius:50%;background:#d4cadb}.controls i:nth-child(2){background:#efbed0}
+.hero{position:relative;min-height:275px;padding:21px 18px;overflow:hidden}.hero small{font-size:8px;font-weight:900;color:#a08ca6}.hero h1{font-size:33px;line-height:.98;margin-top:8px;color:#75627d}.hero h1 span{color:#dc8aa7}.hero p{font-size:10px;line-height:1.5;max-width:250px;margin-top:10px;color:#907d96}
+.hero-art{position:absolute;right:7px;bottom:3px;font-size:92px;animation:float 3s ease-in-out infinite}@keyframes float{50%{transform:translateY(-7px) rotate(2deg)}}
+.input{width:calc(100% - 105px);margin-top:15px;display:flex;align-items:center;gap:5px;padding:6px;background:#fff;border:1px solid #dacfe0;border-radius:11px}.input input{width:100%;min-width:0;border:0;outline:0;background:none;font-size:9px;font-weight:700;color:var(--text)}.input button{width:30px;height:30px;border:0;border-radius:8px;background:linear-gradient(135deg,#efa2be,#b6a8e4);color:#fff;font-size:18px}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}.chip{padding:4px 7px;background:#fff8fc;border:1px solid #ead9e4;border-radius:8px;font-size:7px;font-weight:800}.chip button{border:0;background:none;color:#d989a7;margin-left:3px}
+.primary,.cookbtn,.mini{border:0;border-radius:9px;color:#fff;font-weight:800;background:linear-gradient(135deg,#efa2be,#b4a6e3);box-shadow:0 5px 12px #806b8a18}.primary{margin-top:11px;padding:10px 13px;font-size:9px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 13px}.widget{margin:0;padding:12px;min-height:125px;background:var(--white);border:1px solid white;border-radius:17px;box-shadow:0 8px 20px #806b8a14}.whead{display:flex;justify-content:space-between;font-size:7px;font-weight:900}.widget h3{font-size:15px;margin-top:10px}.widget p{font-size:8px;line-height:1.45;margin-top:4px;color:#97849c}.mini{padding:7px 9px;margin-top:8px;font-size:7px}
+.panel{margin-top:14px}.panelhead{padding:11px 13px;display:flex;justify-content:space-between;background:#dcecf8aa;font-size:8px;font-weight:900}.inventory{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px}.inv{aspect-ratio:1;border:1px solid #e5dbe9;border-radius:12px;background:#fff9;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text)}.inv .food{font-size:25px}.inv span{font-size:6px;font-weight:900;margin-top:3px}
+.adventure{padding:13px;border-radius:18px;background:linear-gradient(135deg,#f8dbe8bb,#e3ddf6bb);border:1px solid white;box-shadow:0 12px 30px #806b8a18}.adventure h2{font-size:18px}.adventure p{font-size:8px;margin-top:3px}.map{height:145px;margin-top:9px;border-radius:13px;background:linear-gradient(145deg,#f6e7ca,#d8eadb);border:2px solid #fff;position:relative;overflow:hidden}.path{position:absolute;height:3px;background:#c9aa8f;transform-origin:left}.p1{width:115px;left:55px;top:105px;transform:rotate(-25deg)}.p2{width:100px;left:150px;top:64px;transform:rotate(24deg)}.place{position:absolute;border:0;background:none;color:#756477;font-size:7px;font-weight:900;display:flex;flex-direction:column;align-items:center}.place b{width:40px;height:40px;display:grid;place-items:center;background:#fff5ec;border:3px solid #c8b7c7;border-radius:50%;font-size:20px}.place1{left:13px;bottom:11px}.place2{left:128px;bottom:54px}.place3{right:13px;top:10px}
+.recipe-area{margin-top:20px}.sectionhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.sectionhead h2{font-size:18px}.sectionhead button{border:0;background:none;color:#c57f9d;font-size:8px;font-weight:900}.recipe{display:flex;margin-bottom:11px;background:var(--white);border:1px solid white;border-radius:17px;overflow:hidden;box-shadow:0 7px 18px #806b8a14}.pic{width:40%;min-height:128px;display:grid;place-items:center;background:linear-gradient(135deg,#ffd8e8,#dad2f5);font-size:62px;position:relative}.match{position:absolute;top:7px;left:7px;background:#fff;color:#c67e9d;border-radius:6px;padding:4px;font-size:6px;font-weight:900}.rbody{padding:11px;flex:1}.rbody small{font-size:7px;color:#c37e9d;font-weight:900}.rbody h3{font-size:15px;margin-top:3px}.rbody p{font-size:8px;line-height:1.4;color:#96839a;margin-top:4px}.meta{font-size:7px;font-weight:800;margin-top:6px}.cookbtn{padding:7px 9px;margin-top:7px;font-size:7px}
+.dock{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);width:calc(100% - 22px);max-width:415px;height:61px;display:flex;justify-content:space-around;align-items:center;background:#ffffffb5;backdrop-filter:blur(17px);border:1px solid white;border-radius:20px;box-shadow:0 12px 30px #806b8a22;z-index:50}.dock button{border:0;background:none;color:#98869d;font-size:7px;font-weight:900;display:flex;flex-direction:column;align-items:center;gap:2px}.dockicon{font-size:17px}.center{width:49px;height:49px;margin-top:-25px;border-radius:14px!important;background:linear-gradient(135deg,#efa2be,#afa2e1)!important;color:white!important;border:4px solid white!important;font-size:21px!important}
+.modal{position:fixed;inset:0;z-index:100;background:#65546a2b;backdrop-filter:blur(7px);display:none;align-items:center;justify-content:center;padding:14px}.modal.show{display:flex}.modalcard{width:100%;max-width:410px;max-height:92vh;overflow:auto;background:#fffffff0;border:2px solid white;border-radius:22px;padding:14px;box-shadow:0 25px 60px #6d5a7a35}.modalhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.modalhead h2{font-size:21px}.close{border:0;background:#f5dce8;color:#b97796;width:34px;height:34px;border-radius:9px;font-size:18px}
+.fridge{height:365px;border-radius:17px;border:3px solid #b9adbf;background:linear-gradient(135deg,#dceaf5,#f3dce8);position:relative;overflow:hidden;padding:18px}.door{position:absolute;inset:12px 15px;background:linear-gradient(90deg,#fffaf6,#ebe7f0);border:3px solid #c8bdcc;border-radius:13px}.handle{position:absolute;right:11px;top:78px;width:7px;height:73px;border-radius:9px;background:#afa1b6}.fridgelabel{position:absolute;left:22px;top:20px;background:#efa9c3;color:#fff;border-radius:7px;padding:5px;font-size:6px;font-weight:900}.shelf{position:absolute;left:24px;right:29px;height:3px;background:#c9bfca}.s1{top:111px}.s2{top:194px}.s3{top:276px}.fi{position:absolute;border:0;background:none;font-size:34px;filter:drop-shadow(0 4px 3px #65536a22)}.fi1{left:45px;top:67px}.fi2{left:119px;top:65px}.fi3{left:197px;top:67px}.fi4{left:69px;top:145px}.fi5{left:160px;top:144px}.fi6{left:247px;top:143px}.fi7{left:101px;top:224px}.fi8{left:202px;top:223px}
+.help{text-align:center;font-size:8px;padding:8px;margin-top:8px;background:#f4edf9;border-radius:9px;font-weight:800}
+.potzone{margin-top:10px;padding:10px;border:2px dashed #aaa0bc;border-radius:16px;text-align:center;background:linear-gradient(135deg,#d9eee9,#e5def7);transition:.2s}.potzone.over{transform:scale(1.02);background:#e4f5f0}.pot{font-size:60px}.potzone h3{font-size:16px}.potzone p{font-size:7px}.selected{min-height:24px;display:flex;flex-wrap:wrap;justify-content:center;gap:4px;margin-top:5px}.selected span{background:#fff;border-radius:6px;padding:4px 6px;font-size:6px;font-weight:900}.discover{border:0;margin-top:8px;padding:10px 13px;border-radius:9px;background:linear-gradient(135deg,#efa2be,#aaa0df);color:white;font-size:8px;font-weight:900}
+.result{margin-top:10px;padding:11px;border-radius:14px;background:#fff7ec;border:1px solid #f0dfcf;display:none}.result.show{display:block}.result h3{font-size:18px}.result .matchline{font-size:8px;color:#c17d9a;font-weight:900;margin-top:3px}.result .rdesc{font-size:8px;line-height:1.45;margin-top:5px}.ingredients{margin-top:8px;display:flex;flex-wrap:wrap;gap:4px}.ingredients span{padding:5px 6px;background:#fff;border-radius:7px;font-size:7px;font-weight:800}.steps{margin-top:9px}.steps h4{font-size:9px}.steps ol{padding-left:18px;margin-top:4px}.steps li{font-size:8px;line-height:1.5;margin-bottom:2px}.result .finish{margin-top:8px;border:0;padding:8px 10px;border-radius:8px;background:#9bcbd0;color:#fff;font-size:7px;font-weight:900}
+.toast{position:fixed;z-index:200;left:50%;bottom:82px;transform:translate(-50%,20px);opacity:0;background:#fff;border:1px solid white;border-radius:12px;padding:10px 14px;font-size:9px;font-weight:900;box-shadow:0 10px 25px #806b8a22;transition:.25s}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(min-width:700px){body{padding:20px 0}.dock{bottom:20px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div class="logo">FRIDGE<b>2</b>FEAST</div><div class="os"><span class="dot"></span>KITCHEN OS</div></header>
+
+<div class="player"><div class="avatar">👩‍🍳</div><div class="info"><div class="name">Kitchen Explorer</div><div class="level">LEVEL 04 • FOOD ADVENTURER</div></div><div class="xp"><div class="xptext"><span>XP</span><span id="xptext">240 / 500</span></div><div class="bar"><div class="fill" id="fill"></div></div></div></div>
+
+<section class="window">
+<div class="head"><span>🧊 MY KITCHEN</span><div class="controls"><i></i><i></i><i></i></div></div>
+<div class="hero">
+<small>WELCOME BACK, CHEF ✦</small>
+<h1>What's hiding<br><span>in your fridge?</span></h1>
+<p>Pick ingredients from your fridge and let Fridge2Feast turn them into a real recipe.</p>
+<div class="input"><span>🥕</span><input id="ingredientInput" placeholder="Add an ingredient..." autocomplete="off"><button id="addBtn" type="button">+</button></div>
+<div class="chips" id="chips"></div>
+<button class="primary" id="openBtn" type="button">🧊 OPEN MY FRIDGE</button>
+<div class="hero-art">🍳</div>
+</div>
+</section>
+
+<div class="grid">
+<div class="widget"><div class="whead"><span>🌸 DAILY QUEST</span><span>+150 XP</span></div><h3>Save The Tomatoes</h3><p>Use tomatoes in a cooking adventure today.</p><button class="mini" id="questBtn" type="button">START QUEST →</button></div>
+<div class="widget"><div class="whead"><span>🧊 FRIDGE STATUS</span><span>● GOOD</span></div><h3 id="status">Fresh & Ready</h3><p id="statusText">Your ingredients are waiting for their next adventure.</p><button class="mini" id="fridgeBtn" type="button">OPEN FRIDGE</button></div>
+</div>
+
+<section class="panel">
+<div class="panelhead"><span>🧺 INGREDIENT COLLECTION</span><span id="count">0 SELECTED</span></div>
+<div class="inventory">
+<button class="inv" data-food="tomato"><div class="food">🍅</div><span>TOMATO</span></button>
+<button class="inv" data-food="egg"><div class="food">🥚</div><span>EGG</span></button>
+<button class="inv" data-food="cheese"><div class="food">🧀</div><span>CHEESE</span></button>
+<button class="inv" data-food="carrot"><div class="food">🥕</div><span>CARROT</span></button>
+<button class="inv" data-food="onion"><div class="food">🧅</div><span>ONION</span></button>
+<button class="inv" data-food="garlic"><div class="food">🧄</div><span>GARLIC</span></button>
+<button class="inv" data-food="milk"><div class="food">🥛</div><span>MILK</span></button>
+<button class="inv" data-food="bread"><div class="food">🍞</div><span>BREAD</span></button>
+</div>
+</section>
+
+<section class="adventure"><h2>🗺️ FOOD ADVENTURE</h2><p>Cook more to unlock new food worlds.</p><div class="map"><div class="path p1"></div><div class="path p2"></div><button class="place place1" type="button"><b>🏡</b>MY KITCHEN</button><button class="place place2" type="button"><b>🍕</b>ITALIAN VALLEY</button><button class="place place3" type="button"><b>🥘</b>SPICE KINGDOM</button></div></section>
+
+<section class="recipe-area" id="recipes"><div class="sectionhead"><h2>✨ FEASTS</h2><button id="viewAll" type="button">VIEW ALL →</button></div>
+<div id="recipeList"></div>
+</section>
+
+<nav class="dock">
+<button type="button" id="homeNav"><div class="dockicon">🏠</div>HOME</button>
+<button type="button" id="fridgeNav"><div class="dockicon">🧊</div>FRIDGE</button>
+<button class="center" type="button" id="centerNav">✦</button>
+<button type="button" id="feastNav"><div class="dockicon">📖</div>FEASTS</button>
+<button type="button" id="badgeNav"><div class="dockicon">🎀</div>BADGES</button>
+</nav>
+</div>
+
+<div class="modal" id="modal">
+<div class="modalcard">
+<div class="modalhead"><h2>🧊 OPEN FRIDGE</h2><button class="close" id="closeBtn" type="button">×</button></div>
+<div class="fridge">
+<div class="door"></div><div class="fridgelabel">FRIDGE2FEAST • HOME FRIDGE</div><div class="handle"></div>
+<div class="shelf s1"></div><div class="shelf s2"></div><div class="shelf s3"></div>
+<button class="fi fi1" draggable="true" data-food="tomato" type="button">🍅</button>
+<button class="fi fi2" draggable="true" data-food="egg" type="button">🥚</button>
+<button class="fi fi3" draggable="true" data-food="cheese" type="button">🧀</button>
+<button class="fi fi4" draggable="true" data-food="carrot" type="button">🥕</button>
+<button class="fi fi5" draggable="true" data-food="onion" type="button">🧅</button>
+<button class="fi fi6" draggable="true" data-food="garlic" type="button">🧄</button>
+<button class="fi fi7" draggable="true" data-food="milk" type="button">🥛</button>
+<button class="fi fi8" draggable="true" data-food="bread" type="button">🍞</button>
+</div>
+<div class="help">Desktop: drag ingredients into the pot. Mobile: tap an ingredient, then tap the pot.</div>
+<div class="potzone" id="potzone"><div class="pot">🍲</div><h3>MAGIC COOKING POT</h3><p>Drop ingredients here</p><div class="selected" id="selected"></div><button class="discover" id="discover" type="button">✨ DISCOVER MY FEAST</button></div>
+<div class="result" id="result" aria-live="polite"><h3 id="resultName"></h3><div class="matchline" id="matchline"></div><p class="rdesc" id="resultDesc"></p><div class="ingredients" id="resultIngredients"></div><div class="steps"><h4>👩‍🍳 HOW TO MAKE IT</h4><ol id="resultSteps"></ol></div><button class="finish" id="finish" type="button">⭐ COOKED! EARN XP</button></div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const ICONS={tomato:"🍅",egg:"🥚",cheese:"🧀",carrot:"🥕",onion:"🧅",garlic:"🧄",milk:"🥛",bread:"🍞"};
+const RECIPES=[
+{name:"Tomato Cheese Toast",emoji:"🍅",needs:["tomato","cheese","bread"],optional:["onion"],time:"12 min",desc:"Crispy toast topped with juicy tomato, melted cheese and a little onion.",steps:["Toast the bread until lightly crisp.","Spread chopped tomato over the toast.","Add cheese and onion.","Heat until the cheese melts.","Serve warm and enjoy your mini feast."]},
+{name:"Garden Veggie Bowl",emoji:"🥕",needs:["carrot","onion","garlic"],optional:["tomato","cheese"],time:"15 min",desc:"A colourful vegetable bowl made from the fresh ingredients in your fridge.",steps:["Chop the carrot and onion.","Sauté onion and garlic until fragrant.","Add carrot and cook until tender.","Add tomato or cheese if available.","Season, mix and serve."]},
+{name:"Creamy Garlic Pasta",emoji:"🍝",needs:["garlic","milk"],optional:["cheese","onion"],time:"20 min",desc:"A creamy comfort meal with garlic and a silky sauce.",steps:["Cook pasta until tender.","Sauté garlic and onion.","Add milk and simmer gently.","Stir in cheese if available.","Toss pasta through the sauce and serve."]},
+{name:"Explorer Egg Toast",emoji:"🍳",needs:["egg","bread"],optional:["cheese","tomato"],time:"10 min",desc:"A quick breakfast quest using egg and crunchy toast.",steps:["Toast the bread.","Whisk and cook the egg.","Add cheese or tomato if available.","Place the egg on toast.","Serve immediately."]},
+{name:"Golden Cheese Melt",emoji:"🧀",needs:["bread","cheese"],optional:["tomato","onion"],time:"8 min",desc:"A simple golden cheese melt for when you want something fast.",steps:["Place cheese on bread.","Add tomato or onion if available.","Toast until golden and melted.","Slice and serve hot."]},
+{name:"Tomato Onion Masala",emoji:"🍲",needs:["tomato","onion"],optional:["garlic","carrot"],time:"18 min",desc:"A warm tomato-onion masala that works beautifully with simple pantry staples.",steps:["Chop tomato and onion.","Cook onion until soft.","Add garlic if available.","Add tomato and cook until saucy.","Season and simmer before serving."]},
+{name:"Cheesy Garden Bites",emoji:"🥕",needs:["carrot","cheese"],optional:["onion","garlic"],time:"14 min",desc:"Crispy little vegetable bites with a cheesy finish.",steps:["Grate or finely chop carrot.","Mix with cheese.","Add onion or garlic if available.","Shape into small bites.","Pan-cook until golden."]},
+{name:"Rainbow Veggie Feast",emoji:"🌈",needs:["carrot","tomato"],optional:["onion","garlic"],time:"16 min",desc:"A bright vegetable feast that turns simple fridge finds into something colourful.",steps:["Chop the vegetables.","Sauté onion and garlic if available.","Add carrot and tomato.","Cook until just tender.","Season and serve warm."]}
+];
+
+let ingredients=[],pot=[],xp=240,lastRecipe=null,toastTimer;
+
+const $=id=>document.getElementById(id);
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const icon=s=>ICONS[s]||"🥘";
+
+function showToast(msg){$("toast").textContent=msg;$("toast").classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("toast").classList.remove("show"),2200)}
+function updateXP(){ $("xptext").textContent=xp+" / 500"; $("fill").style.width=Math.min(100,xp/5)+"%"; }
+function addXP(n){xp+=n;updateXP()}
+
+function renderChips(){
+ $("chips").innerHTML=ingredients.map((x,i)=>`<div class="chip">${icon(x)} ${cap(x)} <button type="button" data-remove="${i}">×</button></div>`).join("");
+ $("count").textContent=ingredients.length+" SELECTED";
+ $("statusText").textContent=ingredients.length?ingredients.length+" ingredients ready for an adventure!":"Your ingredients are waiting for their next adventure.";
+ $("chips").querySelectorAll("[data-remove]").forEach(b=>b.addEventListener("click",()=>{ingredients.splice(+b.dataset.remove,1);renderChips()}));
+}
+function addIngredient(x){
+ const input=$("ingredientInput");
+ const value=(x??input.value).trim().toLowerCase();
+ if(!value){showToast("🧊 Add an ingredient first!");return}
+ if(!ingredients.includes(value)){ingredients.push(value);renderChips();showToast(icon(value)+" "+cap(value)+" added!")}else showToast("💕 You already have that!");
+ input.value="";
+}
+$("addBtn").addEventListener("click",()=>addIngredient());
+$("ingredientInput").addEventListener("keydown",e=>{if(e.key==="Enter")addIngredient()});
+document.querySelectorAll(".inv").forEach(b=>b.addEventListener("click",()=>addIngredient(b.dataset.food)));
+
+function openFridge(){$("modal").classList.add("show")}
+function closeFridge(){$("modal").classList.remove("show")}
+$("openBtn").addEventListener("click",openFridge);$("fridgeBtn").addEventListener("click",openFridge);$("fridgeNav").addEventListener("click",openFridge);$("centerNav").addEventListener("click",openFridge);$("closeBtn").addEventListener("click",closeFridge);
+$("modal").addEventListener("click",e=>{if(e.target===$("modal"))closeFridge()});
+
+function addPot(food){if(!pot.includes(food)){pot.push(food);renderPot();showToast(icon(food)+" added to the cooking pot!")}else showToast("That ingredient is already in the pot!")}
+function renderPot(){$("selected").innerHTML=pot.map(x=>`<span>${icon(x)} ${cap(x)}</span>`).join("")}
+document.querySelectorAll(".fi").forEach(b=>{
+ b.addEventListener("click",()=>{addPot(b.dataset.food);b.dataset.selected="true"});
+ b.addEventListener("dragstart",e=>e.dataTransfer.setData("text/plain",b.dataset.food));
+});
+$("potzone").addEventListener("dragover",e=>{e.preventDefault();$("potzone").classList.add("over")});
+$("potzone").addEventListener("dragleave",()=>$("potzone").classList.remove("over"));
+$("potzone").addEventListener("drop",e=>{e.preventDefault();$("potzone").classList.remove("over");const f=e.dataTransfer.getData("text/plain");if(f)addPot(f)});
+
+function rankRecipes(items){
+ const set=new Set(items);
+ return RECIPES.map(r=>{
+   const hits=r.needs.filter(x=>set.has(x)).length;
+   const optional=r.optional.filter(x=>set.has(x)).length;
+   const score=hits===r.needs.length?Math.min(99,90+optional*5):Math.round((hits/r.needs.length)*82+optional*6);
+   return {...r,hits,optional,score,missing:r.needs.filter(x=>!set.has(x))};
+ }).filter(r=>r.hits>0).sort((a,b)=>b.score-a.score);
+}
+
+function discover(){
+ if(!pot.length){showToast("🍲 Put ingredients into the pot first!");return}
+ const ranked=rankRecipes(pot);
+ lastRecipe=ranked[0]||null;
+ if(!lastRecipe){showToast("🥘 Add another ingredient for a better match!");return}
+ $("resultName").textContent=lastRecipe.emoji+" "+lastRecipe.name;
+ $("matchline").textContent=lastRecipe.score+"% MATCH • ⏱ "+lastRecipe.time;
+ $("resultDesc").textContent=lastRecipe.desc+(lastRecipe.missing.length?" Missing: "+lastRecipe.missing.map(cap).join(", ")+".":" You have everything needed!");
+ $("resultIngredients").innerHTML=lastRecipe.needs.map(x=>`<span>${icon(x)} ${cap(x)}</span>`).join("");
+ $("resultSteps").innerHTML=lastRecipe.steps.map(x=>`<li>${x}</li>`).join("");
+ $("result").classList.add("show");
+ addXP(50);
+ showToast("🎉 "+lastRecipe.name+" discovered! +50 XP");
+}
+$("discover").addEventListener("click",discover);
+
+function finishCooking(){
+ if(!lastRecipe)return;
+ addXP(100);
+ showToast("👑 "+lastRecipe.name+" cooked! +100 XP");
+ renderRecommendations();
+}
+$("finish").addEventListener("click",finishCooking);
+
+function renderRecommendations(){
+ const ranked=rankRecipes(pot.length?pot:ingredients);
+ const list=$("recipeList");
+ if(!ranked.length){
+   list.innerHTML=`<div class="recipe"><div class="rbody"><h3>🧊 Your fridge is waiting</h3><p>Add ingredients and discover personalized recipes.</p></div></div>`;
+   return;
+ }
+ list.innerHTML=ranked.slice(0,3).map(r=>`
+ <article class="recipe">
+  <div class="pic">${r.emoji}<span class="match">${r.score}% MATCH</span></div>
+  <div class="rbody"><small>✦ FRIDGE MATCH</small><h3>${r.name}</h3><p>${r.missing.length?"Need: "+r.missing.map(cap).join(", "):"✓ You have the core ingredients!"}</p><div class="meta">⏱ ${r.time} • 🥕 ${r.needs.length} CORE ITEMS</div><button class="cookbtn" type="button" data-cook="${r.name}">🍳 COOK THIS</button></div>
+ </article>`).join("");
+ list.querySelectorAll("[data-cook]").forEach(b=>b.addEventListener("click",()=>cookNamed(b.dataset.cook)));
+}
+function cookNamed(name){const r=RECIPES.find(x=>x.name===name);if(!r)return;lastRecipe=r;showRecipeDetails(r)}
+function showRecipeDetails(r){
+ $("resultName").textContent=r.emoji+" "+r.name;
+ $("matchline").textContent="🍳 YOUR RECIPE • ⏱ "+r.time;
+ $("resultDesc").textContent=r.desc;
+ $("resultIngredients").innerHTML=r.needs.map(x=>`<span>${icon(x)} ${cap(x)}</span>`).join("");
+ $("resultSteps").innerHTML=r.steps.map(x=>`<li>${x}</li>`).join("");
+ $("result").classList.add("show");
+ openFridge();
+ $("result").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+$("feastNav").addEventListener("click",()=>{renderRecommendations();$("recipes").scrollIntoView({behavior:"smooth"})});
+$("viewAll").addEventListener("click",()=>{renderRecommendations();$("recipes").scrollIntoView({behavior:"smooth"})});
+$("homeNav").addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}));
+$("badgeNav").addEventListener("click",()=>showToast("🏆 Cook more feasts to unlock badges!"));
+$("questBtn").addEventListener("click",()=>{showToast("🍅 Daily quest started! +150 XP when completed.");addXP(10)});
+
+renderChips();renderRecommendations();updateXP();
+</script>
+</body>
+</html>
